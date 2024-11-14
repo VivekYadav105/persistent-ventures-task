@@ -1,0 +1,47 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url = env("DATABASE_URI")
+}
+
+model User{
+    id Int @id @default(autoincrement())
+    userId String @unique
+    email String @unique
+    createdAt DateTime @default(now())
+    password String 
+    planId String?
+    token String?
+    creditsLeft Int @default(3)
+    scans Scan[]
+}
+
+model Scan{
+    id Int @id @default(autoincrement())
+    userId String
+    image String
+    createdAt DateTime @default(now())
+    user User @relation(fields: [userId], references: [userId])
+    count Int @default(0)
+    result Result[]
+}
+
+model Result{
+    scanId Int 
+    photoId Int
+    image String
+    scan Scan @relation(fields: [scanId],references: [id])
+    @@id([scanId, photoId])
+}
+
+model Payment{
+    userId String 
+    paymentId String @id
+    amount Int
+    currency String @default("INR")
+    status String
+}
+
